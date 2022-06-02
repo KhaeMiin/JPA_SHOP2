@@ -49,19 +49,14 @@ class MemberServiceTest {
         member1.setName("kim");
 
         Member member2 = new Member();
-        member2.setName("kim");
+        member2.setName("kim2");
 
         //when
         memberService.join(member1);
-        try {
-            memberService.join(member2);
-        } catch (IllegalStateException e) {
-            return;
-        }
 
         //then
-        fail("예외가 발생해야 합니다. (예외 발생 안함)"); //이 경우 테스트 실패
-        IllegalStateException thrown = assertThrows(IllegalStateException.class, () -> memberService.join(member2));
+//        fail("예외가 발생해야 합니다. (예외 발생 안함)"); //이 경우 테스트 실패
+        IllegalStateException thrown = assertThrows(IllegalStateException.class, () -> memberService.join(member1));
         assertEquals("이미 존재하는 회원입니다.", thrown.getMessage());
     }
 
