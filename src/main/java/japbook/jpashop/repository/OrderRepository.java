@@ -1,6 +1,7 @@
 package japbook.jpashop.repository;
 
 import japbook.jpashop.domain.Order;
+import japbook.jpashop.repository.order.simplequery.OrderSimpleQueryDto;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
 import org.springframework.util.StringUtils;
@@ -11,6 +12,9 @@ import javax.persistence.criteria.*;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * 재사용 되는 앤티티를 조회한
+ */
 @Repository
 @RequiredArgsConstructor
 public class OrderRepository {
@@ -103,4 +107,6 @@ public class OrderRepository {
                         " join fetch o.delivery d", Order.class
         ).getResultList();
     }
+
+
 }

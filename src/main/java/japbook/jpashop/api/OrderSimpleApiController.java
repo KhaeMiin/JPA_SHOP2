@@ -5,6 +5,8 @@ import japbook.jpashop.domain.Order;
 import japbook.jpashop.domain.OrderStatus;
 import japbook.jpashop.repository.OrderRepository;
 import japbook.jpashop.repository.OrderSearch;
+import japbook.jpashop.repository.order.simplequery.OrderSimpleQueryDto;
+import japbook.jpashop.repository.order.simplequery.OrderSimpleQueryRepository;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.RequiredArgsConstructor;
@@ -26,6 +28,7 @@ import java.util.stream.Collectors;
 public class OrderSimpleApiController {
 
     private final OrderRepository orderRepository;
+    private final OrderSimpleQueryRepository orderSimpleQueryRepository;
 
     /**
      * 엔티티를 직접 노출한 상태
@@ -62,6 +65,17 @@ public class OrderSimpleApiController {
         return new Result(collect);
     }
 
+    /**
+     * repository에서 원하는 데이터만 뽑아서 쓸 수 있어서 쿼리를 줄일 수 있지만
+     * 그 성능의 효과는 미미함
+     * 그리고 API 스펙이 바뀌면 쿼리문 자체를 뜯어고쳐야함
+     * 그러므로 v3의 fetch join 사용하자! (주관적인 생각)
+     * @return
+     */
+    @GetMapping("/api/v4/simple-orders")
+    public List<OrderSimpleQueryDto> ordersV4() {
+        return orderSimpleQueryRepository.findOrderDtos();
+    }
 
     @Data
     static class SimpleOrderDto {
