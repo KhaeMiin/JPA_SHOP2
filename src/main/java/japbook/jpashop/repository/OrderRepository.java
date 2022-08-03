@@ -89,4 +89,18 @@ public class OrderRepository {
         TypedQuery<Order> query = em.createQuery(cq).setMaxResults(1000);
         return query.getResultList();
     }
+
+    /**
+     * 지연로딩을 무시하고 진짜 객체(프록시 객체 아님)에 값을 다 채워서 가져옴
+     * 자주 사용한다.
+     * 백퍼센트 이해하자!!!!!!jsql 사용할 경우 성능 문제 해결할 수 있으니까!!
+     * @return
+     */
+    public List<Order> findAllWithMemberDelivery() {
+        return em.createQuery(
+                "select o from Order o" +
+                        " join fetch o.member m" +
+                        " join fetch o.delivery d", Order.class
+        ).getResultList();
+    }
 }
