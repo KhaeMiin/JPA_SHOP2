@@ -1,7 +1,6 @@
 package japbook.jpashop.repository;
 
 import japbook.jpashop.domain.Order;
-import japbook.jpashop.repository.order.simplequery.OrderSimpleQueryDto;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
 import org.springframework.util.StringUtils;
@@ -108,5 +107,22 @@ public class OrderRepository {
         ).getResultList();
     }
 
-
+    /**
+     * distinct
+     * 중복 결과값을 지워준다.
+     * db에서는 완벽하게 모든 컬럼의 값이 같아야지 중복으로 인식하고 지운다
+     * JPA에서 자체적으로 객체가 동일할 경우 제외시켜준다.
+     * 패치 조인 장점: SQL이 한 번만 실행됨
+     * 단점: 페이징 불가능
+     * @return
+     */
+    public List<Order> findAllWithItem() {
+        return em.createQuery(
+                "select distinct o from Order o" +
+                        " join fetch o.member m" +
+                        " join fetch o.delivery d" +
+                        " join fetch o.orderItems oi" +
+                        " join fetch oi.item i", Order.class)
+                .getResultList();
+    }
 }
