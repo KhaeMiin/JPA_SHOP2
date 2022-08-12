@@ -9,6 +9,7 @@ import japbook.jpashop.repository.OrderSearch;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.time.LocalDateTime;
@@ -48,6 +49,29 @@ public class OrderApiController {
     @GetMapping("/api/v3/orders")
     public List<OrderDto> ordersV3() {
         List<Order> orders = orderRepository.findAllWithItem();
+        List<OrderDto> result = orders.stream()
+                .map(o -> new OrderDto(o))
+                .collect(Collectors.toList());
+        return result;
+    }
+
+    /**
+     * 패치 조인_페이징 처리하기
+     * Orderitems과 item에: DTO에서 값을 넣을 때 프록시가 초기화되면서 쿼리가 나간다.
+     * (V3는 쿼리문에 Orderitems, item을 패치조인하여 한방 쿼리로 가져옴)
+     * application.yml에서 default_batch_fetch_size: 100추가
+     * (detail하게 사용하고 싶으면 엔티티에 @BatchSize(size=100)으로 적어주면 된다. 일대다 경우 해당 필드에, 다대일경우 @Entity 선언한 위치에)
+     * → 이렇게 되면 Orderitems, item에 대한 값을 미리 다 가져와버린다. (프록시 초기화시 쿼리가 나갈 때)
+     * @return
+     */
+    @GetMapping("/api/v3.1/orders")
+    public List<OrderDto> ordersV3_page(
+            @RequestParam(value = "offset", defaultValue = "0") int offset,
+            @RequestParam(value = "limit", defaultValue = "100") int limit) {
+        List<Order> orders = orderRepository.findAllWithMemberDelivery(offset, limit);
+
+
+
         List<OrderDto> result = orders.stream()
                 .map(o -> new OrderDto(o))
                 .collect(Collectors.toList());
